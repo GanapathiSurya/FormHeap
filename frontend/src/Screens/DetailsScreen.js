@@ -6,13 +6,17 @@ export default function DetailsScreen() {
     const dispatch = useDispatch();
     const [search, setSearch] = useState('');
     const [searchOption,setSearchOption] = useState("");
+    const [sortOption,setSortOption] = useState("");
     const [searchOptionIgnore,setSearchOptionIgnore] = useState("");
+    const [sortOptionIgnore,setSortOptionIgnore] = useState("");
     const userSignin = useSelector((state) => state.userSignin);
     const { userInfo, loading, error } = userSignin;
     const checkFormCreated = useSelector((state) => state.checkFormCreated);
     const { formInfo} = checkFormCreated;
     const getMyDataForm = useSelector((state) => state.getMyFormData);
     const { myformInfo} = getMyDataForm;
+    /* Filters*/
+    const [sort,setSort] = useState("");
     if(!userInfo){
     window.location.replace("/signin")
     }
@@ -33,6 +37,12 @@ export default function DetailsScreen() {
     const searchOptions = (e) => {
         setSearchOption(e.target.attributes.value.value.toLowerCase())
         setSearchOptionIgnore(e.target.attributes.value.value)
+        setSortOption("");
+    }
+    const sortOptions = (e) => {
+        setSortOption(e.target.attributes.value.value.toLowerCase())
+        setSortOptionIgnore(e.target.attributes.value.value)
+        setSearchOption("");
     }
     const FormAttributes = (ele) => {
         if(ele[0] === "ownerid"){
@@ -42,6 +52,17 @@ export default function DetailsScreen() {
         return (
 
             <span className={searchOption === ele[0].toLowerCase() ? "active" : "not-active"} onClick={searchOptions} value={ele[0]}>{ele[0]}</span>
+        )
+      }
+      
+    const SortFormAttributes = (ele) => {
+        if(ele[0] === "ownerid"){
+            return <></>;
+        }
+        //alert(typeof(ele[0]))
+        return (
+
+            <span  onClick={sortOptions} className={sortOption === ele[0].toLowerCase() ? "active" : "not-active"}  value={ele[0]}>{ele[0]}</span>
         )
       }
     const SingleRecord = (ele) => {
@@ -66,11 +87,23 @@ export default function DetailsScreen() {
            {/* {JSON.stringify(userInfo)}<br></br>
            {JSON.stringify(formInfo)}
            {myformInfo && JSON.stringify(myformInfo)} */}
+           {/* {sortOption}
+           {sortOptionIgnore} */}
            <br></br>
            <center>
                <div className="details-main-container">
                <div className="details-filter">
-                
+                <div>
+                    <h1>Applying Filters</h1>
+                </div>
+                <div>
+                <div>
+                    <h2>Sort by</h2>
+                </div>
+                <div className="column-search">
+                {formInfo && Object.entries(formInfo.formschemaobj).map(SortFormAttributes)}
+                </div>
+                </div>
                </div>
                <div className="details-form">
                    {formInfo && <div className="search-box">
@@ -89,7 +122,7 @@ export default function DetailsScreen() {
                  <tr>
                  {formInfo && Object.entries(formInfo.formschemaobj).map(FormHead)}
                  </tr>
-                 {myformInfo && myformInfo.filter((val) => {
+                 {sortOption === "" && myformInfo && myformInfo.filter((val) => {
                      //console.log(val[searchOptionIgnore].toLowerCase()+"--"+search.toLowerCase())
                 if (search === '')
                     return val;
@@ -97,14 +130,12 @@ export default function DetailsScreen() {
                     
                     return val;
                 }
-                // else if (val.data.small_city.includes(search.toLowerCase())) {
-                //     return val;
-                // }
-                // else if (val.data.small_state.includes(search.toLowerCase())) {
-                //     return val;
-                // }
+                
                 return null;
                  }).map(Record)}
+                 {sortOption !== "" && myformInfo && myformInfo.sort((a,b) =>  (a[sortOptionIgnore] > b[sortOptionIgnore]) ? 1 : -1)
+                 .map(Record)}
+                 
              </table>
                ):(
                 <button onClick={goToCreateForm} className="normal-btn">Start creating a Form</button>

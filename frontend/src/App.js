@@ -51,10 +51,10 @@ function App() {
             </>}
             {!userInfo && <>
               <div>
-              <Link to="/register" className="no-underline links"><font style={{color:"black"}}>Register</font></Link>
+              <Link to="/register" className="no-underline links">Register</Link>
             </div>
             <div>
-              <Link to="/signin" className="no-underline links"><font style={{color:"black"}}>Login</font></Link>
+              <Link to="/signin" className="no-underline links">Login</Link>
             </div></>}
             {userInfo && 
             <table>
