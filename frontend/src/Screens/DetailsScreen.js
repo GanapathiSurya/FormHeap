@@ -2,13 +2,19 @@ import React from 'react'
 import { useEffect,useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMyFormData } from '../actions/formActions';
+// import AnalyticsIcon from '@material-ui/icons/Analytics';
 export default function DetailsScreen() {
+   
     const dispatch = useDispatch();
     const [search, setSearch] = useState('');
     const [searchOption,setSearchOption] = useState("");
     const [sortOption,setSortOption] = useState("");
+    const [startsWithColumnOption,setStartsWithColumnOption] = useState("");
     const [searchOptionIgnore,setSearchOptionIgnore] = useState("");
     const [sortOptionIgnore,setSortOptionIgnore] = useState("");
+    const [startsWithColumnOptionIgnore,setStartsWithColumnOptionIgnore] = useState("");
+    const [lettersSet,setLettersSet] = useState(null);
+    const [letterSelected, setLetterSelected] = useState("");
     const userSignin = useSelector((state) => state.userSignin);
     const { userInfo, loading, error } = userSignin;
     const checkFormCreated = useSelector((state) => state.checkFormCreated);
@@ -38,17 +44,33 @@ export default function DetailsScreen() {
         setSearchOption(e.target.attributes.value.value.toLowerCase())
         setSearchOptionIgnore(e.target.attributes.value.value)
         setSortOption("");
+        setStartsWithColumnOption("");
     }
     const sortOptions = (e) => {
         setSortOption(e.target.attributes.value.value.toLowerCase())
         setSortOptionIgnore(e.target.attributes.value.value)
         setSearchOption("");
+        setStartsWithColumnOption("");
+        
     }
+    const startsWithColumnOptions = (e) => {
+        var a = new Set();
+        setStartsWithColumnOption(e.target.attributes.value.value.toLowerCase())
+        setStartsWithColumnOptionIgnore(e.target.attributes.value.value)
+        setSearchOption("");
+        setSortOption("");
+        myformInfo.forEach(ele => {
+            // console.log(JSON.stringify(ele))
+            // console.log(e.target.attributes.value.value);
+            a.add(ele[e.target.attributes.value.value].toLowerCase().slice(0,1))
+        });
+        setLettersSet(Array.from(a).sort());
+    }
+    
     const FormAttributes = (ele) => {
         if(ele[0] === "ownerid"){
             return <></>;
         }
-        //alert(typeof(ele[0]))
         return (
 
             <span className={searchOption === ele[0].toLowerCase() ? "active" : "not-active"} onClick={searchOptions} value={ele[0]}>{ele[0]}</span>
@@ -59,11 +81,24 @@ export default function DetailsScreen() {
         if(ele[0] === "ownerid"){
             return <></>;
         }
-        //alert(typeof(ele[0]))
+        
         return (
 
-            <span  onClick={sortOptions} className={sortOption === ele[0].toLowerCase() ? "active" : "not-active"}  value={ele[0]}>{ele[0]}</span>
+            <span style={{margin:"0 20px"}} onClick={sortOptions} className={sortOption === ele[0].toLowerCase() ? "active" : "not-active"}  value={ele[0]}>{ele[0]}</span>
         )
+      }
+
+    const StartsWithFormAttributes = (ele) => {
+        if(ele[0] === "ownerid" || ele[0] === "Number"){
+            return <></>;
+        }
+        else if(ele[1] === "String"){
+            return (
+
+                <span style={{margin:"0 20px"}} onClick={startsWithColumnOptions} className={startsWithColumnOption === ele[0].toLowerCase() ? "active" : "not-active"}  value={ele[0]}>{ele[0]}</span>
+            )
+        }
+        
       }
     const SingleRecord = (ele) => {
         if(ele[0] === "ownerid" || ele[0] === "_id"  || ele[0] === "__v" ){
@@ -76,23 +111,23 @@ export default function DetailsScreen() {
     const goToCreateForm =() => {
         window.location.replace("/createform")
     }
+    const Letters = (ele) => {
+     return <div value={ele} className={ele.toLowerCase() === letterSelected ? "active":"not-active"} onClick={letterChoice}>{ele.toUpperCase()}</div>;
+    }
+    const letterChoice= (e) => {
+        setLetterSelected(e.target.attributes.value.value.toLowerCase())
+        
+    }
     const Record = (ele) => {
      return <tr>{Object.entries(ele).map(SingleRecord)}</tr>
      
-
-
     }
     return (
         <div>
-           {/* {JSON.stringify(userInfo)}<br></br>
-           {JSON.stringify(formInfo)}
-           {myformInfo && JSON.stringify(myformInfo)} */}
-           {/* {sortOption}
-           {sortOptionIgnore} */}
-           <br></br>
+          
            <center>
                <div className="details-main-container">
-               <div className="details-filter">
+               {formInfo && <div className="details-filter">
                 <div>
                     <h1>Applying Filters</h1>
                 </div>
@@ -104,11 +139,24 @@ export default function DetailsScreen() {
                 {formInfo && Object.entries(formInfo.formschemaobj).map(SortFormAttributes)}
                 </div>
                 </div>
+                <div>
+                <div>
+                    <h2>Starts With</h2>
+                </div>
+                <div className="column-search">
+                {formInfo && Object.entries(formInfo.formschemaobj).map(StartsWithFormAttributes)}
+                </div>
+                </div>
+               </div>}
+               <div className="starts-with-letter-div">
+                   
+                   {startsWithColumnOption && lettersSet && Array.from(lettersSet).map(Letters)}
+                   
                </div>
                <div className="details-form">
                    {formInfo && <div className="search-box">
                       {searchOption === "" || searchOptionIgnore === "" ? (
-                        <strong>Select Search Option</strong>
+                        <h2>Select Search Option</h2>
                       ):(
                         <input type="text" className="search-box-input"  onChange={(e) => setSearch(e.target.value)}></input>
                       )
@@ -117,12 +165,17 @@ export default function DetailsScreen() {
                 <div className="column-search">
                 {formInfo && Object.entries(formInfo.formschemaobj).map(FormAttributes)}
                 </div>
+                
                {formInfo ? (
                  <table className="form-table-head">
+                 {/* <tr>
+                 {formInfo && Object.entries(formInfo.formschemaobj).map(Statistics)}
+                 </tr> */}
                  <tr>
                  {formInfo && Object.entries(formInfo.formschemaobj).map(FormHead)}
                  </tr>
-                 {sortOption === "" && myformInfo && myformInfo.filter((val) => {
+                 
+                 {sortOption === "" && startsWithColumnOption === "" && myformInfo && myformInfo.filter((val) => {
                      //console.log(val[searchOptionIgnore].toLowerCase()+"--"+search.toLowerCase())
                 if (search === '')
                     return val;
@@ -133,9 +186,16 @@ export default function DetailsScreen() {
                 
                 return null;
                  }).map(Record)}
-                 {sortOption !== "" && myformInfo && myformInfo.sort((a,b) =>  (a[sortOptionIgnore] > b[sortOptionIgnore]) ? 1 : -1)
+                 {sortOption !== "" && startsWithColumnOption === "" && myformInfo && myformInfo.sort((a,b) =>  (a[sortOptionIgnore].toLowerCase() > b[sortOptionIgnore].toLowerCase()) ? 1 : -1)
                  .map(Record)}
-                 
+                 {myformInfo && startsWithColumnOption !== "" && searchOption === "" && sortOption === "" && myformInfo.filter((val) => {
+                
+                if (val[startsWithColumnOptionIgnore].toLowerCase().startsWith(letterSelected))
+                    return val;
+                
+                
+                return null;
+                 }).map(Record)}
              </table>
                ):(
                 <button onClick={goToCreateForm} className="normal-btn">Start creating a Form</button>

@@ -71,7 +71,7 @@ color:white;
   font-size: 1rem;
   width:150px;
 }
-.form-table-head tr{
+.form-table-head tr,th{
   animation-name: dataanimation1;
   animation-duration: 2s;
 }
@@ -111,7 +111,7 @@ color:white;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-evenly;
   padding: 10px;
 }
 .column-search span{
@@ -121,6 +121,7 @@ color:white;
   padding:5px;
   border-radius: 15px;
   cursor: pointer;
+  text-transform: capitalize;
 }
 .search-box-input{
   width:100%;
@@ -129,6 +130,33 @@ color:white;
   border:none;
   border-radius: 10px;
   outline: none;
+}
+.starts-with-letter-div {
+  height: 500px;
+overflow-y: auto;
+}
+
+.starts-with-letter-div::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}
+.starts-with-letter-div div{
+border:1px solid #f2f2f2;
+font-size: 1.5rem;
+padding:10px;
+border-collapse: collapse;
+cursor: pointer;
+}
+
+.starts-with-letter-div div:first-child {
+  border-top-left-radius:5px;
+  border-top-right-radius:5px;
+
+}
+
+.starts-with-letter-div div:last-child {
+  border-bottom-left-radius:5px;
+  border-bottom-right-radius:5px;
+
 }
 /*EnterFormDetailsScreen*/
 .normal-form{
