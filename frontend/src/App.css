@@ -100,6 +100,15 @@ color:white;
   justify-content: space-around;
   padding: 20px;
 }
+.details-filter{
+  overflow-y: auto;
+  height:400px;
+  border:2px solid #f2f2f2;
+}
+
+.details-filter::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}
 .active {
   background-color: #035afc;
   color: white;
@@ -145,6 +154,8 @@ font-size: 1.5rem;
 padding:10px;
 border-collapse: collapse;
 cursor: pointer;
+width: 25px;
+height: 25px;
 }
 
 .starts-with-letter-div div:first-child {
