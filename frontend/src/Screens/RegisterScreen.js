@@ -58,7 +58,7 @@ export default function RegisterScreen() {
              
             </table>    
             <div>
-            Already customer?{' '}
+            Already User?{' '}
             <Link to="/signin">
              Log into account
             </Link>

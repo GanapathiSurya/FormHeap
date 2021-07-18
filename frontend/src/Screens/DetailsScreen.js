@@ -22,8 +22,8 @@ export default function DetailsScreen() {
     const { formInfo} = checkFormCreated;
     const getMyDataForm = useSelector((state) => state.getMyFormData);
     const { myformInfo} = getMyDataForm;
-    /* Filters*/
-    const [sort,setSort] = useState("");
+    const [statistics, setStatistics] = useState(["Min or Max","Average","Sum","Group By","Count"]);
+    const [measure, setMeasure] = useState("");
     if(!userInfo){
     window.location.replace("/signin")
     }
@@ -47,7 +47,7 @@ export default function DetailsScreen() {
         setSortOption("");
         setStartsWithColumnOption("");
         setNoOfRows(null);
-
+        setMeasure("");
     }
     const sortOptions = (e) => {
         setSortOption(e.target.attributes.value.value.toLowerCase())
@@ -55,7 +55,15 @@ export default function DetailsScreen() {
         setSearchOption("");
         setStartsWithColumnOption("");
         setNoOfRows(null);
-
+        setMeasure("");
+    }
+    const statisticsOptions = (e) => {
+        setMeasure(e.target.attributes.value.value);
+        setSortOption("");
+        setSearchOption("");
+        setStartsWithColumnOption("");
+        setNoOfRows(null);
+        
     }
     const startsWithColumnOptions = (e) => {
         var a = new Set();
@@ -64,6 +72,7 @@ export default function DetailsScreen() {
         setSearchOption("");
         setSortOption("");
         setNoOfRows(null);
+        setMeasure("");
         myformInfo.forEach(ele => {
             
             a.add(ele[e.target.attributes.value.value].toLowerCase().slice(0,1))
@@ -131,22 +140,31 @@ export default function DetailsScreen() {
         setSortOption("");
         setStartsWithColumnOption("");
         setSearchOption("");
+        setMeasure("");
+
     }
+    const Statistics = (ele) => {
+        return (
+
+            <span style={{margin:"0 20px"}} onClick={statisticsOptions} className={measure === ele ? "statistics-active" : "statistics-not-active"}  value={ele}>{ele}</span>
+        )
+    }
+    
     return (
         <div>
-          {console.log(noOfRows)}
            <center>
+               
                <div className="details-main-container">
-               {formInfo && <div className="details-filter">
+               {formInfo && myformInfo && <div className="details-filter">
                 <div>
                     <h1>Applying Filters</h1>
                 </div>
-                <div >
+                <div>
                 <div>
                     <h2>Sort by</h2>
                 </div>
                 <div className="column-search">
-                {formInfo && Object.entries(formInfo.formschemaobj).map(SortFormAttributes)}
+                {formInfo && myformInfo && Object.entries(formInfo.formschemaobj).map(SortFormAttributes)}
                 </div>
                 </div>
                 <div>
@@ -154,15 +172,15 @@ export default function DetailsScreen() {
                     <h2>Starts With</h2>
                 </div>
                 <div className="column-search">
-                {formInfo && Object.entries(formInfo.formschemaobj).map(StartsWithFormAttributes)}
+                {formInfo && myformInfo &&  Object.entries(formInfo.formschemaobj).map(StartsWithFormAttributes)}
                 </div>
                 </div>
                 <div>
                 <div>
                     <h2>Get First N Rows</h2>
                 </div>
-                <div className="column-search">
-                <input type="number"  onChange={displayNoOfRows} ></input>
+                <div>
+                <input type="number" placeholder="Enter N" onChange={displayNoOfRows} ></input>
                 </div>
                 </div>
                </div>}
@@ -171,7 +189,10 @@ export default function DetailsScreen() {
                    {startsWithColumnOption && lettersSet && Array.from(lettersSet).map(Letters)}
                    
                </div>
-               <div className="details-form">
+               {<div className="details-form">
+               <div className="statistics">
+                {formInfo && myformInfo && statistics.map(Statistics)}
+               </div>
                    {formInfo && <div className="search-box">
                       {searchOption === "" || searchOptionIgnore === "" ? (
                         <h2>Select Search Option</h2>
@@ -219,7 +240,7 @@ export default function DetailsScreen() {
                ):(
                 <button onClick={goToCreateForm} className="normal-btn">Start creating a Form</button>
                )}
-               </div>
+               </div>}
                </div>
            </center>
           

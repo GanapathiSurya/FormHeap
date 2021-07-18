@@ -56,7 +56,7 @@ export default function SigninScreen(props) {
           
         </table>
         <div>
-         New customer?{' '}
+         New User?{' '}
             <Link to="/register">
               Create your account
             </Link>
